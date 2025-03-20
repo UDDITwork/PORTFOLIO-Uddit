@@ -1,0 +1,1452 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Uddit - Research & Publications</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/0.155.0/three.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/particles.js/2.0.0/particles.min.js"></script>
+    <style>
+        :root {
+            --primary: #4361ee;
+            --secondary: #3a0ca3;
+            --accent: #7209b7;
+            --light: #f8f9fa;
+            --dark: #212529;
+            --success: #4cc9f0;
+            --gradient: linear-gradient(135deg, var(--primary), var(--accent));
+            --gradient-alt: linear-gradient(135deg, #7209b7, #3a0ca3);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            scroll-behavior: smooth;
+        }
+
+        body {
+            background-color: #0f0f0f;
+            color: var(--light);
+            overflow-x: hidden;
+            perspective: 1000px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 2rem;
+            position: relative;
+            z-index: 2;
+        }
+
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1.5rem 2rem;
+            position: fixed;
+            width: 100%;
+            top: 0;
+            left: 0;
+            z-index: 1000;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+            background-color: rgba(15, 15, 15, 0.7);
+        }
+
+        nav.scrolled {
+            background-color: rgba(15, 15, 15, 0.9);
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        .logo {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--primary);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .logo i {
+            font-size: 1.5rem;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+        }
+
+        .nav-links a {
+            color: var(--light);
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s ease;
+            position: relative;
+            padding: 0.3rem 0;
+        }
+
+        .nav-links a:hover {
+            color: var(--primary);
+        }
+
+        .nav-links a::after {
+            content: '';
+            position: absolute;
+            width: 0;
+            height: 2px;
+            bottom: 0;
+            left: 0;
+            background: var(--gradient);
+            transition: width 0.3s ease;
+        }
+
+        .nav-links a:hover::after {
+            width: 100%;
+        }
+
+        .hero {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            position: relative;
+            overflow: hidden;
+            padding-top: 80px;
+        }
+
+        #particles-js {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            z-index: 1;
+        }
+
+        .hero-content {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 2rem 0;
+            position: relative;
+            z-index: 2;
+        }
+
+        .hero h1 {
+            font-size: 4rem;
+            margin-bottom: 1.5rem;
+            background: var(--gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            line-height: 1.2;
+        }
+
+        .hero p {
+            font-size: 1.2rem;
+            line-height: 1.6;
+            margin-bottom: 2rem;
+            max-width: 800px;
+            color: #d1d1d1;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 0.8rem 1.8rem;
+            border-radius: 50px;
+            background: var(--gradient);
+            color: white;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(67, 97, 238, 0.3);
+            border: none;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+            z-index: 1;
+        }
+
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 0%;
+            height: 100%;
+            background: var(--gradient-alt);
+            transition: all 0.5s ease;
+            z-index: -1;
+        }
+
+        .btn:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(67, 97, 238, 0.4);
+        }
+
+        .btn:hover::before {
+            width: 100%;
+        }
+
+        .btn-alt {
+            background: transparent;
+            border: 2px solid var(--primary);
+            color: var(--primary);
+        }
+
+        .btn-alt:hover {
+            background: var(--primary);
+            color: white;
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .section {
+            padding: 6rem 0;
+            position: relative;
+        }
+
+        .section-title {
+            text-align: center;
+            font-size: 2.5rem;
+            margin-bottom: 3rem;
+            position: relative;
+            padding-bottom: 1rem;
+            background: var(--gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .section-title::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100px;
+            height: 3px;
+            background: var(--gradient);
+        }
+
+        .card {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            margin-bottom: 2rem;
+            transition: transform 0.5s ease, box-shadow 0.5s ease;
+            position: relative;
+            backdrop-filter: blur(5px);
+            transform-style: preserve-3d;
+            perspective: 1000px;
+        }
+
+        .card:hover {
+            transform: translateY(-10px) rotateX(5deg);
+            box-shadow: 0 15px 40px rgba(67, 97, 238, 0.2);
+        }
+
+        .card-img {
+            width: 100%;
+            height: 250px;
+            object-fit: cover;
+            transition: transform 0.5s ease;
+        }
+
+        .card:hover .card-img {
+            transform: scale(1.05);
+        }
+
+        .card-content {
+            padding: 1.5rem;
+        }
+
+        .card-title {
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+            color: var(--success);
+        }
+
+        .card-description {
+            font-size: 1rem;
+            line-height: 1.6;
+            color: #d1d1d1;
+            margin-bottom: 1.5rem;
+        }
+
+        .card-link {
+            display: flex;
+            gap: 0.5rem;
+            align-items: center;
+            color: var(--primary);
+            text-decoration: none;
+            font-weight: 500;
+            transition: transform 0.3s ease;
+        }
+
+        .card-link:hover {
+            transform: translateX(5px);
+        }
+
+        .blog-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+
+        .youtube-section {
+            position: relative;
+            z-index: 2;
+        }
+
+        .video-container {
+            position: relative;
+            padding-bottom: 56.25%;
+            height: 0;
+            overflow: hidden;
+            border-radius: 20px;
+            margin-bottom: 2rem;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .video-container:hover {
+            transform: scale(1.03);
+            box-shadow: 0 15px 40px rgba(67, 97, 238, 0.3);
+        }
+
+        .video-container iframe {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border: none;
+            border-radius: 20px;
+        }
+
+        .video-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+
+        .learning-section {
+            background: rgba(58, 12, 163, 0.05);
+            backdrop-filter: blur(5px);
+            border-radius: 20px;
+            padding: 3rem;
+            margin-top: 4rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .learning-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, rgba(67, 97, 238, 0.1), rgba(114, 9, 183, 0.1));
+            z-index: -1;
+        }
+
+        .skills-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            margin-top: 2rem;
+        }
+
+        .skill-item {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 50px;
+            padding: 0.5rem 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: transform 0.3s ease, background 0.3s ease;
+        }
+
+        .skill-item:hover {
+            transform: translateY(-5px);
+            background: var(--gradient);
+        }
+
+        .skill-item i {
+            font-size: 1.2rem;
+            color: var(--primary);
+        }
+
+        .skill-item:hover i {
+            color: white;
+        }
+
+        .contribution-section {
+            position: relative;
+            padding: 6rem 0;
+            margin-top: 4rem;
+            overflow: hidden;
+        }
+
+        .contribution-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: url('https://techvidvan.com/tutorials/wp-content/uploads/sites/2/2020/08/Reinforcement-Learning-in-ML-TV.jpg');
+            background-size: cover;
+            background-position: center;
+            opacity: 0.1;
+            z-index: -1;
+            filter: blur(5px);
+        }
+
+        .repo-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-top: 3rem;
+        }
+
+        .repo-card {
+            background: rgba(255, 255, 255, 0.07);
+            border-radius: 15px;
+            padding: 1.5rem;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+        }
+
+        .repo-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.2);
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .repo-title {
+            font-size: 1.3rem;
+            margin-bottom: 1rem;
+            color: var(--success);
+        }
+
+        .repo-description {
+            color: #d1d1d1;
+            margin-bottom: 1.5rem;
+            flex-grow: 1;
+        }
+
+        .repo-meta {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-top: auto;
+        }
+
+        .repo-meta span {
+            display: flex;
+            align-items: center;
+            gap: 0.3rem;
+            font-size: 0.9rem;
+            color: #a1a1a1;
+        }
+
+        .resume-section {
+            position: relative;
+            overflow: hidden;
+            padding: 6rem 0;
+            margin-top: 2rem;
+        }
+
+        .resume-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 2rem;
+            margin-top: 3rem;
+        }
+
+        .resume-preview {
+            width: 100%;
+            max-width: 800px;
+            height: 70vh;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            transition: transform 0.3s ease;
+        }
+
+        .resume-preview:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 50px rgba(67, 97, 238, 0.3);
+        }
+
+        .footer {
+            background: rgba(15, 15, 15, 0.9);
+            padding: 3rem 0;
+            text-align: center;
+            position: relative;
+            margin-top: 4rem;
+        }
+
+        .footer p {
+            margin-bottom: 1rem;
+            color: #d1d1d1;
+        }
+
+        .social-links {
+            display: flex;
+            justify-content: center;
+            gap: 1.5rem;
+            margin-top: 1.5rem;
+        }
+
+        .social-links a {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            font-size: 1.2rem;
+            transition: all 0.3s ease;
+        }
+
+        .social-links a:hover {
+            background: var(--gradient);
+            transform: translateY(-5px);
+        }
+
+        .back-to-top {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            width: 50px;
+            height: 50px;
+            background: var(--gradient);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            opacity: 0;
+            transition: opacity 0.3s ease, transform 0.3s ease;
+            z-index: 100;
+        }
+
+        .back-to-top.visible {
+            opacity: 1;
+        }
+
+        .back-to-top:hover {
+            transform: translateY(-5px);
+        }
+
+        .glowing-border {
+            position: relative;
+        }
+
+        .glowing-border::before {
+            content: '';
+            position: absolute;
+            top: -2px;
+            left: -2px;
+            right: -2px;
+            bottom: -2px;
+            z-index: -1;
+            background: var(--gradient);
+            border-radius: 22px;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .glowing-border:hover::before {
+            opacity: 1;
+        }
+
+        /* AI and ML Decorative Elements */
+        .neural-network {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            opacity: 0.1;
+        }
+
+        .neuron {
+            position: absolute;
+            border-radius: 50%;
+            background: var(--primary);
+            box-shadow: 0 0 10px var(--primary);
+        }
+
+        .synapse {
+            position: absolute;
+            height: 1px;
+            background: linear-gradient(to right, transparent, var(--primary), transparent);
+            transform-origin: 0 0;
+            z-index: -1;
+        }
+
+        @keyframes floating {
+            0%, 100% {
+                transform: translateY(0);
+            }
+            50% {
+                transform: translateY(-20px);
+            }
+        }
+
+        .floating-data {
+            position: absolute;
+            font-family: monospace;
+            color: var(--primary);
+            opacity: 0.3;
+            font-size: 0.8rem;
+            white-space: nowrap;
+            animation: floating 15s infinite ease-in-out;
+        }
+
+        /* Mobile Responsive */
+        @media (max-width: 992px) {
+            .nav-links {
+                display: none;
+            }
+
+            .hero h1 {
+                font-size: 3rem;
+            }
+
+            .blog-grid,
+            .repo-grid,
+            .video-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .hero h1 {
+                font-size: 2.5rem;
+            }
+
+            .section-title {
+                font-size: 2rem;
+            }
+
+            .learning-section {
+                padding: 2rem 1.5rem;
+            }
+
+            .resume-preview {
+                height: 50vh;
+            }
+        }
+
+        @media (max-width: 576px) {
+            .hero h1 {
+                font-size: 2rem;
+            }
+
+            .btn-group {
+                flex-direction: column;
+                width: 100%;
+            }
+
+            .btn {
+                width: 100%;
+                text-align: center;
+            }
+        }
+
+        /* Code Animation */
+        .code-animation {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            z-index: -1;
+            opacity: 0.1;
+            overflow: hidden;
+        }
+
+        .code-line {
+            position: absolute;
+            font-family: monospace;
+            color: var(--primary);
+            white-space: nowrap;
+            font-size: 0.9rem;
+            animation: code-scroll 20s linear infinite;
+        }
+
+        @keyframes code-scroll {
+            0% {
+                transform: translateY(-100%);
+            }
+            100% {
+                transform: translateY(100vh);
+            }
+        }
+
+        .ml-effect {
+            position: relative;
+            overflow: hidden;
+        }
+
+        .ml-effect::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(67, 97, 238, 0.2), transparent);
+            animation: ml-scan 3s ease-in-out infinite;
+        }
+
+        @keyframes ml-scan {
+            0% {
+                left: -100%;
+            }
+            100% {
+                left: 100%;
+            }
+        }
+
+        /* Fancy Gradient Text */
+        .gradient-text {
+            background: var(--gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            display: inline;
+        }
+
+        /* 3D Card Effect */
+        .card-3d-container {
+            perspective: 1000px;
+        }
+
+        .card-3d {
+            transition: transform 0.5s;
+            transform-style: preserve-3d;
+        }
+
+        .card-3d:hover {
+            transform: rotateY(10deg) rotateX(5deg);
+        }
+    </style>
+</head>
+<body>
+    <div id="particles-js"></div>
+    <div class="code-animation" id="codeAnimation"></div>
+
+    <nav id="navbar">
+        <a href="#" class="logo"><i class="fas fa-brain"></i> UDDIT</a>
+        <div class="nav-links">
+            <a href="#research">Research</a>
+            <a href="#blogs">Publications</a>
+            <a href="#videos">Videos</a>
+            <a href="#learning">Learning</a>
+            <a href="#resume">Resume</a>
+        </div>
+    </nav>
+
+    <section class="hero" id="hero">
+        <div class="container hero-content">
+            <h1>AI & ML Research Work</h1>
+            <p>Exploring the frontiers of AI and Machine Learning with a focus on Reinforcement Learning applications, Neural Networks, and innovative solutions for real-world problems.</p>
+            <div class="btn-group">
+                <a href="#research" class="btn">View Research</a>
+                <a href="#blogs" class="btn">Read Publications</a>
+                <a href="UdditResume.pdf" target="_blank" class="btn">View Resume</a>
+            </div>
+        </div>
+    </section>
+
+    <section class="section" id="research">
+        <div class="container">
+            <h2 class="section-title">Research Gate Work</h2>
+            <div class="card glowing-border ml-effect">
+                <img src="https://www.researchgate.net/publication/image/406561916_fig1_Large-Scale-Multi-modal-Language-Models-Showing-LLMs-with-Multi-modal-Embedding.png" alt="Research Gate" class="card-img">
+                <div class="card-content">
+                    <h3 class="card-title">Research Publications & Contributions</h3>
+                    <p class="card-description">
+                        My research work spans various domains in AI and ML, with a special focus on Reinforcement Learning applications, transformer models, and multi-modal AI systems. I've contributed to papers on language models optimization, patent processing with AI, and ethical considerations in AI deployment.
+                    </p>
+                    <a href="https://www.researchgate.net/profile/Uddit" class="card-link" target="_blank">
+                        <i class="fas fa-external-link-alt"></i> View Research Gate Profile
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="section" id="blogs">
+        <div class="container">
+            <h2 class="section-title">Medium Publications</h2>
+            <div class="blog-grid">
+                <div class="card card-3d-container">
+                    <div class="card-3d">
+                        <img src="https://techvidvan.com/tutorials/wp-content/uploads/sites/2/2020/08/Reinforcement-Learning-in-ML-TV.jpg" alt="RL for Pricing" class="card-img">
+                        <div class="card-content">
+                            <h3 class="card-title">Using Reinforcement Learning for Pricing Strategy</h3>
+                            <p class="card-description">
+                                Explore how reinforcement learning algorithms can be applied to determine optimal pricing strategies for customers in real-time, maximizing both customer satisfaction and business revenue.
+                            </p>
+                            <a href="https://medium.com/@udditkantsinha/using-reinforcement-learning-to-decide-the-pricing-strategy-for-customers-in-real-time-a30093884096" class="card-link" target="_blank">
+                                <i class="fab fa-medium"></i> Read on Medium
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card card-3d-container">
+                    <div class="card-3d">
+                        <img src="https://media.licdn.com/dms/image/D5612AQEKi9SkW7h9Ww/article-cover_image-shrink_720_1280/0/1679917265279?e=2147483647&v=beta&t=vN-7QX7lnUzY-lEQa72JjCqOVJLK9LUKMjrEHEkCw3A" alt="RL Reshaping AI" class="card-img">
+                        <div class="card-content">
+                            <h3 class="card-title">Reinforcement Learning: Reshaping AI</h3>
+                            <p class="card-description">
+                                A deep dive into how reinforcement learning is transforming artificial intelligence, creating systems that can learn, adapt, and make decisions in complex environments.
+                            </p>
+                            <a href="https://medium.com/@udditalerts247/reinforcement-learning-reshaping-the-artificial-intelligence-f9845cb22f8c" class="card-link" target="_blank">
+                                <i class="fab fa-medium"></i> Read on Medium
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card card-3d-container">
+                    <div class="card-3d">
+                        <img src="https://pbs.twimg.com/media/F8uy42gXkAAz0W4.jpg" alt="DeepSeek vs OpenAI" class="card-img">
+                        <div class="card-content">
+                            <h3 class="card-title">DeepSeek's Victory Over OpenAI Using RL</h3>
+                            <p class="card-description">
+                                An analysis of how DeepSeek, a Chinese AI startup, utilized innovative reinforcement learning techniques to create models that outperform OpenAI's in certain metrics.
+                            </p>
+                            <a href="https://medium.com/@udditalerts247/in-the-rapidly-evolving-landscape-of-artificial-intelligence-deepseek-a-chinese-ai-startup-has-bddbf7d7f572" class="card-link" target="_blank">
+                                <i class="fab fa-medium"></i> Read on Medium
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card card-3d-container">
+                    <div class="card-3d">
+                        <img src="https://techvidvan.com/tutorials/wp-content/uploads/sites/2/2020/08/Reinforcement-Learning-in-ML-TV.jpg" alt="RL Algorithms" class="card-img">
+                        <div class="card-content">
+                            <h3 class="card-title">Reinforcement Learning: Algorithms & Applications</h3>
+                            <p class="card-description">
+                                A comprehensive overview of key reinforcement learning algorithms and their practical applications across various industries, from robotics to finance.
+                            </p>
+                            <a href="https://medium.com/@udditalerts247/reinforcement-learning-algorithms-and-applications-a606d98a2bd7" class="card-link" target="_blank">
+                                <i class="fab fa-medium"></i> Read on Medium
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card card-3d-container">
+                    <div class="card-3d">
+                        <img src="https://www.subodhmba.org/public/upload/life/675a873c2c4a01.jpg" alt="Internship at Electroglobal" class="card-img">
+                        <div class="card-content">
+                            <h3 class="card-title">ML Internship at ElectroGlobal Inc</h3>
+                            <p class="card-description">
+                                My 3-month internship experience at ElectroGlobal Inc, a government-funded startup, where I worked on implementing machine learning solutions for IoT projects.
+                            </p>
+                            <a href="https://medium.com/@udditalerts247/my-3-month-internship-at-electroglobal-inc-c70f3917ef03" class="card-link" target="_blank">
+                                <i class="fab fa-medium"></i> Read on Medium
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="section youtube-section" id="videos">
+        <div class="container">
+            <h2 class="section-title">Video Content</h2>
+            <div class="video-grid">
+                <div class="video-container">
+                    <iframe src="https://www.youtube.com/embed/dQw4w9WgXcQ" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                </div>
+                <div class="video-container">
+                    <iframe src="https://www.youtube.com/embed/Edx9D2yaOGs" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                </div>
+                <div class="video-container">
+                    <iframe src="https://www.youtube.com/embed/ysz5S6PUM-U" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                </div>
+                <div class="video-container">
+                    <iframe src="https://www.youtube.com/embed/hVvEISFw9w0" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="section" id="learning">
+        <div class="container">
+            <h2 class="section-title">Learning & Open to Discussions</h2>
+            <div class="learning-section">
+                <p>I'm constantly exploring and expanding my knowledge in the following areas. If you're interested in any of these topics, I'm always open to discussions, collaborations, and knowledge exchange.</p>
+                <div class="skills-container">
+                    <div class="skill-item">
+                        <i class="fas fa-robot"></i>
+                        <span>Reinforcement Learning</span>
+                    </div>
+                    <div class="skill-item">
+                        <i class="fas fa-brain"></i>
+                        <span>Large Language Models</span>
+                    </div>
+                    <div class="skill-item">
+                        <i class="fas fa-microchip"></i>
+                        <span>Transformer Architectures</span>
+                    </div>
+                    <div class="skill-item">
+                        <i class="fas fa-chart-network"></i>
+                        <span>Neural Networks</span>
+                    </div>
+                    <div class="skill-item">
+                        <i class="fas fa-eye"></i>
+                        <span>Computer Vision</span>
+                    </div>
+                    <div class="skill-item">
+                        <i class="fas fa-code"></i>
+                        <span>PyTorch & TensorFlow</span>
+                    </div>
+                    <div class="skill-item">
+                        <i class="fas fa-server"></i>
+                        <span>AI Model Deployment</span>
+                    </div>
+                    <div class="skill-item">
+                        <i class="fas fa-project-diagram"></i>
+                        <span>Graph Neural Networks</span>
+                    </div>
+                    <div class="skill-item">
+                        <i class="fas fa-cloud"></i>
+                        <span>Cloud AI Services</span>
+                    </div>
+                    <div class="skill-item">
+                        <i class="fas fa-file-code"></i>
+                        <span>ML Ops</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="section contribution-section" id="contribution">
+        <div class="container">
+            <h2 class="section-title">Contributions Invited</h2>
+            <p style="text-align: center; margin-bottom: 3rem;">I'm working on several open-source projects and would appreciate contributions, feedback, and collaborations. Let's build amazing AI solutions together!</p>
+            
+            <div class="repo-grid">
+                <div class="repo-card">
+                    <h3 class="repo-title">Multi-PDFs ChatApp AI Agent</h3>
+                    <p class="repo-description">Chat seamlessly with Multiple PDFs using Langchain, Google Gemini Pro & FAISS Vector DB with Streamlit deployment.</p>
+                    <div class="repo-meta">
+                        <span><i class="fas fa-code-branch"></i> 42</span>
+                        <span><i class="fas fa-star"></i> 128</span>
+                        <a href="https://github.com/GURPREETKAURJETHRA/Multi-PDFs_ChatApp_AI-Agent" class="card-link" target="_blank">
+                            <i class="fab fa-github"></i> View Repository
+                        </a>
+                    </div>
+                </div>
+                
+                <div class="repo-card">
+                    <h3 class="repo-title">Image to Speech GenAI Tool</h3>
+                    <p class="repo-description">AI tool that generates an audio short story based on the context of an uploaded image by prompting a GenAI LLM model.</p>
+                    <div class="repo-meta">
+                        <span><i class="fas fa-code-branch"></i> 23</span>
+                        <span><i class="fas fa-star"></i> 95</span>
+                        <a href="https://github.com/GURPREETKAURJETHRA/Image-to-Speech-GenAI-Tool-Using-LLM" class="card-link" target="_blank">
+                            <i class="fab fa-github"></i> View Repository
+                        </a>
+                    </div>
+                </div>
+                
+                <div class="repo-card">
+                    <h3 class="repo-title">End to End RAG LLM App</h3>
+                    <p class="repo-description">Step-by-Step Guide to Building a RAG LLM App with LLamA2 and LLaMAindex for effective retrieval-augmented generation.</p>
+                    <div class="repo-meta">
+                        <span><i class="fas fa-code-branch"></i> 38</span>
+                        <span><i class="fas fa-star"></i> 112</span>
+                        <a href="https://github.com/GURPREETKAURJETHRA/Building-a-RAG-LLM-App-with-LLamA2-and-LLaMAindex" class="card-link" target="_blank">
+                            <i class="fab fa-github"></i> View Repository
+                        </a>
+                    </div>
+                </div>
+                
+                <div class="repo-card">
+                    <h3 class="repo-title">Resume ATS Tracking LLM Project</h3>
+                    <p class="repo-description">Project optimizing the recruitment process by integrating an advanced Applicant Tracking System with Google Gemini Pro.</p>
+                    <div class="repo-meta">
+                        <span><i class="fas fa-code-branch"></i> 19</span>
+                        <span><i class="fas fa-star"></i> 87</span>
+                        <a href="https://github.com/GURPREETKAURJETHRA/Resume-ATS-Tracking-LLM-Project" class="card-link" target="_blank">
+                            <i class="fab fa-github"></i> View Repository
+                        </a>
+                    </div>
+                </div>
+                
+                <div class="repo-card">
+                    <h3 class="repo-title">Text To SQL LLM App</h3>
+                    <p class="repo-description">Application that facilitates the conversion of natural language queries into SQL commands and enables querying SQL databases.</p>
+                    <div class="repo-meta">
+                        <span><i class="fas fa-code-branch"></i> 26</span>
+                        <span><i class="fas fa-star"></i> 72</span>
+                        <a href="https://github.com/GURPREETKAURJETHRA/End-To-End-Text-To-SQL-LLM-App-Along-With-Querying-SQL-Database" class="card-link" target="_blank">
+                            <i class="fab fa-github"></i> View Repository
+                        </a>
+                    </div>
+                </div>
+                
+                <div class="repo-card">
+                    <h3 class="repo-title">Fine Tune LLAMA 2</h3>
+                    <p class="repo-description">Tools and techniques for fine-tuning the LLAMA 2 language model with custom datasets using LoRA and QLoRA methods.</p>
+                    <div class="repo-meta">
+                        <span><i class="fas fa-code-branch"></i> 34</span>
+                        <span><i class="fas fa-star"></i> 143</span>
+                        <a href="https://github.com/GURPREETKAURJETHRA/Fine-Tune-LLAMA-2-With-Custom-Dataset" class="card-link" target="_blank">
+                            <i class="fab fa-github"></i> View Repository
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="section resume-section" id="resume">
+        <div class="container">
+            <h2 class="section-title">Resume</h2>
+            <div class="resume-container">
+                <iframe src="UdditResume.pdf" class="resume-preview"></iframe>
+                <a href="UdditResume.pdf" download class="btn">
+                    <i class="fas fa-download"></i> Download Resume
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <footer class="footer">
+        <div class="container">
+            <p>© 2025 Uddit. All rights reserved.</p>
+            <div class="social-links">
+                <a href="https://github.com/UDDITwork" target="_blank"><i class="fab fa-github"></i></a>
+                <a href="https://www.linkedin.com/in/lorduddit-/" target="_blank"><i class="fab fa-linkedin"></i></a>
+                <a href="https://www.youtube.com/@uddit748" target="_blank"><i class="fab fa-youtube"></i></a>
+                <a href="https://medium.com/@udditkantsinha" target="_blank"><i class="fab fa-medium"></i></a>
+                <a href="https://www.researchgate.net/profile/Uddit" target="_blank"><i class="fas fa-flask"></i></a>
+                <a href="mailto:2021umt1791@mnit.ac.in"><i class="far fa-envelope"></i></a>
+            </div>
+        </div>
+    </footer>
+
+    <div class="back-to-top" id="back-to-top">
+        <i class="fas fa-arrow-up"></i>
+    </div>
+
+    <script>
+        // Initialize particles.js
+        particlesJS('particles-js', {
+            "particles": {
+                "number": {
+                    "value": 80,
+                    "density": {
+                        "enable": true,
+                        "value_area": 800
+                    }
+                },
+                "color": {
+                    "value": "#4361ee"
+                },
+                "shape": {
+                    "type": "circle",
+                    "stroke": {
+                        "width": 0,
+                        "color": "#000000"
+                    },
+                    "polygon": {
+                        "nb_sides": 5
+                    }
+                },
+                "opacity": {
+                    "value": 0.5,
+                    "random": true,
+                    "anim": {
+                        "enable": true,
+                        "speed": 1,
+                        "opacity_min": 0.1,
+                        "sync": false
+                    }
+                },
+                "size": {
+                    "value": 3,
+                    "random": true,
+                    "anim": {
+                        "enable": true,
+                        "speed": 2,
+                        "size_min": 0.1,
+                        "sync": false
+                    }
+                },
+                "line_linked": {
+                    "enable": true,
+                    "distance": 150,
+                    "color": "#3a0ca3",
+                    "opacity": 0.4,
+                    "width": 1
+                },
+                "move": {
+                    "enable": true,
+                    "speed": 1,
+                    "direction": "none",
+                    "random": true,
+                    "straight": false,
+                    "out_mode": "out",
+                    "bounce": false,
+                    "attract": {
+                        "enable": true,
+                        "rotateX": 600,
+                        "rotateY": 1200
+                    }
+                }
+            },
+            "interactivity": {
+                "detect_on": "canvas",
+                "events": {
+                    "onhover": {
+                        "enable": true,
+                        "mode": "grab"
+                    },
+                    "onclick": {
+                        "enable": true,
+                        "mode": "push"
+                    },
+                    "resize": true
+                },
+                "modes": {
+                    "grab": {
+                        "distance": 140,
+                        "line_linked": {
+                            "opacity": 1
+                        }
+                    },
+                    "bubble": {
+                        "distance": 400,
+                        "size": 40,
+                        "duration": 2,
+                        "opacity": 8,
+                        "speed": 3
+                    },
+                    "repulse": {
+                        "distance": 200,
+                        "duration": 0.4
+                    },
+                    "push": {
+                        "particles_nb": 4
+                    },
+                    "remove": {
+                        "particles_nb": 2
+                    }
+                }
+            },
+            "retina_detect": true
+        });
+
+        // Create Code Animation
+        const codeAnimation = document.getElementById('codeAnimation');
+        const codeSnippets = [
+            "def q_learning(env, num_episodes, alpha=0.1, gamma=0.99):",
+            "class NeuralNetwork(nn.Module):",
+            "def forward(self, x):",
+            "return self.fc(x)",
+            "optimizer = torch.optim.Adam(model.parameters())",
+            "loss = nn.MSELoss()",
+            "def train_test_split(X, y, test_size=0.2):",
+            "from langchain import OpenAI, LLMChain",
+            "from transformers import pipeline",
+            "import tensorflow as tf",
+            "import numpy as np",
+            "def attention(q, k, v, mask=None):",
+            "class TransformerBlock(nn.Module):",
+            "def _build_causal_attention_mask(self, seq_len):",
+            "class ReplayBuffer:",
+            "def sample(self, batch_size):",
+            "class Agent:",
+            "def __init__(self, state_size, action_size):",
+            "self.model = build_model(state_size, action_size)",
+            "def act(self, state):",
+            "import matplotlib.pyplot as plt",
+            "plt.figure(figsize=(10, 6))",
+            "plt.plot(rewards)",
+            "embeddings = model.encode(texts)",
+            "similarity = cosine_similarity(embeddings)",
+            "from sklearn.cluster import KMeans",
+            "kmeans = KMeans(n_clusters=5)",
+            "y_pred = kmeans.fit_predict(X)",
+            "@tf.function",
+            "def train_step(images, labels):",
+            "with tf.GradientTape() as tape:",
+            "predictions = model(images, training=True)",
+            "from keras.models import Sequential",
+            "model.add(Conv2D(32, kernel_size=(3, 3), activation='relu'))",
+            "model.add(MaxPooling2D(pool_size=(2, 2)))",
+            "model.add(Flatten())",
+            "X_train, X_test, y_train, y_test = train_test_split(X, y)",
+            "state = env.reset()",
+            "while not done:",
+            "action = agent.act(state)",
+            "next_state, reward, done, _ = env.step(action)",
+            "agent.remember(state, action, reward, next_state, done)",
+            "state = next_state",
+            "if len(agent.memory) > batch_size:",
+            "agent.replay(batch_size)"
+        ];
+        
+        for (let i = 0; i < 20; i++) {
+            const codeLine = document.createElement('div');
+            codeLine.className = 'code-line';
+            codeLine.textContent = codeSnippets[Math.floor(Math.random() * codeSnippets.length)];
+            codeLine.style.left = `${Math.random() * 90}%`;
+            codeLine.style.top = `${Math.random() * 100}%`;
+            codeLine.style.opacity = Math.random() * 0.5 + 0.1;
+            codeLine.style.animationDuration = `${Math.random() * 20 + 10}s`;
+            codeLine.style.animationDelay = `${Math.random() * 5}s`;
+            codeAnimation.appendChild(codeLine);
+        }
+
+        // Navbar scroll effect
+        const navbar = document.getElementById('navbar');
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 50) {
+                navbar.classList.add('scrolled');
+            } else {
+                navbar.classList.remove('scrolled');
+            }
+        });
+
+        // Back to top button
+        const backToTopBtn = document.getElementById('back-to-top');
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 300) {
+                backToTopBtn.classList.add('visible');
+            } else {
+                backToTopBtn.classList.remove('visible');
+            }
+        });
+        
+        backToTopBtn.addEventListener('click', () => {
+            window.scrollTo({
+                top: 0,
+                behavior: 'smooth'
+            });
+        });
+
+        // Smooth scroll for nav links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function(e) {
+                e.preventDefault();
+                const targetId = this.getAttribute('href');
+                if (targetId === '#') return;
+                
+                const targetElement = document.querySelector(targetId);
+                if (targetElement) {
+                    const navbarHeight = navbar.offsetHeight;
+                    const targetPosition = targetElement.getBoundingClientRect().top + window.pageYOffset - navbarHeight;
+                    
+                    window.scrollTo({
+                        top: targetPosition,
+                        behavior: 'smooth'
+                    });
+                }
+            });
+        });
+
+        // Initialize Neural Network Animation
+        function createNeuralNetwork() {
+            const container = document.createElement('div');
+            container.className = 'neural-network';
+            document.body.appendChild(container);
+            
+            // Create neurons
+            const neurons = [];
+            const numNeurons = 20;
+            
+            for (let i = 0; i < numNeurons; i++) {
+                const neuron = document.createElement('div');
+                neuron.className = 'neuron';
+                neuron.style.top = `${Math.random() * 100}%`;
+                neuron.style.left = `${Math.random() * 100}%`;
+                neuron.style.width = `${Math.random() * 6 + 2}px`;
+                neuron.style.height = neuron.style.width;
+                neuron.style.opacity = Math.random() * 0.5 + 0.2;
+                container.appendChild(neuron);
+                neurons.push(neuron);
+            }
+            
+            // Create synapses
+            for (let i = 0; i < numNeurons; i++) {
+                for (let j = i + 1; j < numNeurons; j++) {
+                    if (Math.random() < 0.2) {
+                        const synapse = document.createElement('div');
+                        synapse.className = 'synapse';
+                        
+                        const neuron1 = neurons[i];
+                        const neuron2 = neurons[j];
+                        
+                        const x1 = parseFloat(neuron1.style.left);
+                        const y1 = parseFloat(neuron1.style.top);
+                        const x2 = parseFloat(neuron2.style.left);
+                        const y2 = parseFloat(neuron2.style.top);
+                        
+                        const length = Math.sqrt(Math.pow(x2 - x1, 2) + Math.pow(y2 - y1, 2));
+                        const angle = Math.atan2(y2 - y1, x2 - x1) * 180 / Math.PI;
+                        
+                        synapse.style.width = `${length}%`;
+                        synapse.style.left = `${x1}%`;
+                        synapse.style.top = `${y1}%`;
+                        synapse.style.transform = `rotate(${angle}deg)`;
+                        synapse.style.opacity = Math.random() * 0.3 + 0.1;
+                        
+                        container.appendChild(synapse);
+                    }
+                }
+            }
+        }
+        
+        createNeuralNetwork();
+
+        // Create floating data points 
+        function createFloatingData() {
+            const dataTexts = [
+                "x = np.array([1, 2, 3, 4])",
+                "y_pred = model.predict(x)",
+                "loss = 0.0342",
+                "accuracy = 98.7%",
+                "epoch 10/100",
+                "learning_rate = 0.001",
+                "batch_size = 32",
+                "optimizer = Adam()",
+                "reward = 15.75",
+                "epsilon = 0.1",
+                "Q(s,a) = 24.68",
+                "gamma = 0.99"
+            ];
+            
+            for (let i = 0; i < 10; i++) {
+                const floatingData = document.createElement('div');
+                floatingData.className = 'floating-data';
+                floatingData.textContent = dataTexts[Math.floor(Math.random() * dataTexts.length)];
+                floatingData.style.left = `${Math.random() * 90}%`;
+                floatingData.style.top = `${Math.random() * 90}%`;
+                floatingData.style.animationDelay = `${Math.random() * 5}s`;
+                document.body.appendChild(floatingData);
+            }
+        }
+        
+        createFloatingData();
+
+        // GSAP Animations
+        gsap.registerPlugin(ScrollTrigger);
+        
+        // Card animations
+        gsap.utils.toArray('.card').forEach(card => {
+            gsap.from(card, {
+                scrollTrigger: {
+                    trigger: card,
+                    start: "top 80%",
+                    toggleActions: "play none none reverse"
+                },
+                y: 100,
+                opacity: 0,
+                duration: 1,
+                ease: "power3.out"
+            });
+        });
+        
+        // Section title animations
+        gsap.utils.toArray('.section-title').forEach(title => {
+            gsap.from(title, {
+                scrollTrigger: {
+                    trigger: title,
+                    start: "top 80%",
+                    toggleActions: "play none none reverse"
+                },
+                y: 50,
+                opacity: 0,
+                duration: 0.8,
+                ease: "back.out(1.7)"
+            });
+        });
+        
+        // Repo card stagger
+        gsap.from('.repo-card', {
+            scrollTrigger: {
+                trigger: '.repo-grid',
+                start: "top 80%"
+            },
+            y: 50,
+            opacity: 0,
+            duration: 0.8,
+            stagger: 0.15,
+            ease: "power3.out"
+        });
+        
+        // Skill items stagger
+        gsap.from('.skill-item', {
+            scrollTrigger: {
+                trigger: '.skills-container',
+                start: "top 80%"
+            },
+            scale: 0.8,
+            opacity: 0,
+            duration: 0.5,
+            stagger: 0.1,
+            ease: "back.out(1.7)"
+        });
+        
+        // 3D card effect
+        document.querySelectorAll('.card-3d-container').forEach(card => {
+            card.addEventListener('mousemove', e => {
+                const cardRect = card.getBoundingClientRect();
+                const cardCenterX = cardRect.left + cardRect.width / 2;
+                const cardCenterY = cardRect.top + cardRect.height / 2;
+                
+                const mouseX = e.clientX - cardCenterX;
+                const mouseY = e.clientY - cardCenterY;
+                
+                const rotateY = mouseX / 10;
+                const rotateX = -mouseY / 10;
+                
+                card.querySelector('.card-3d').style.transform = `rotateY(${rotateY}deg) rotateX(${rotateX}deg)`;
+            });
+            
+            card.addEventListener('mouseleave', () => {
+                card.querySelector('.card-3d').style.transform = 'rotateY(0) rotateX(0)';
+            });
+        });
+    </script>
+</body>
+</html>
